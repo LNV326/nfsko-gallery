@@ -1,0 +1,31 @@
+{% extends app.request.xmlHttpRequest 
+         ? "SiteCoreBundle::ajaxlayout.html.twig"
+         : "SiteCoreBundle::layout.html.twig" %}
+         
+{% block keywords %}{{ parent(keywords) }}, hd, скриншоты, обои, автомобили, девушки, обложки, карты, wallpapers, walls, screens, screenshots, cars, girls, covers{% endblock %}
+         
+{% block location %}
+	<div class="module-navigate left">
+	{% if (album is defined)and(album != null) %}
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a href='{{ path('site_gallery_category', {'cRefId':album.category.getRefId}) }}'>{{ album.category.name }}</a><a>{{ album.dictionary.title }}</a>
+	{% elseif (category is defined)and(category != null) %}
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>{{ category.name }}</a>
+	{% elseif (not album is defined)and(not category is defined) %}
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a>
+	{% else %}
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>Ошибка</a>
+	{% endif %}
+	</div>
+	<div class="fb-dialog right">
+		{% if (album is defined)and(album != null) %}
+			{% if is_granted('ROLE_GAL_ADD_IMG') or album.allowAdd %}
+				<a href='{{ path('site_gallery_addImages', {'cRefId':album.category.getRefId,'aRefId':album.dictionary.refId}) }}'>Добавить</a>
+			{% endif %}
+		{% elseif (category is defined)and(category != null) %}
+			{% if is_granted('ROLE_GAL_ADD_ALB') %}
+				<a href='{{ path('site_gallery_addAlbum', {'cRefId':category.getRefId}) }}'>Добавить</a>
+			{% endif %}
+		{% endif %}
+	</div>
+{% endblock %}
+

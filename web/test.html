@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+	<script type="text/javascript" src="/bundles/sitecore/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/bundles/sitecore/js/jquery.ajaxy.js"></script>
+    <script type="text/javascript" src="/bundles/sitecore/js/jquery.fancybox.js"></script>
+	<link rel="stylesheet" href="/bundles/sitecore/css/modern.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/bundles/sitecore/css/modern_gallery.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/bundles/sitecore/css/jquery.fancybox.css" type="text/css" media="all">
+</head>
+<body>
+<style id='st'>
+
+.group, .group-name, .group-items, .group-item, .group1 {
+	border: 1px solid black;
+	width: 200pxq;
+	display: block;
+}
+.group-name, .group-items {
+	display: table;
+}
+.group-name {
+	position: relative;
+}
+.group-item {
+	display: table-row;
+}
+.group .group-name:after {
+	content: '';
+	position: absolute;
+	width: 20px;
+	text-align: center;
+	right: 0;
+	top: 0;
+}
+
+
+.group.open .group-name:after {
+	content: '-';
+}
+.group.open .group-items {
+	display: block;
+}
+.group.close .group-name:after {
+	content: '+';
+}
+.group.close .group-items {
+	display: none;
+}
+
+
+
+</style>
+	<div class='group open'>
+		<div class='group-name'>Название группы</div>
+		<div class='group-items'>
+			<div class='group-item'>Элемент 1</div>
+			<div class='group-item'>Элемент 2</div>
+			<div class='group-item'>Элемент 3</div>
+		</div>
+	</div>
+<script type="text/javascript">
+/*
+var prop = {
+		_value : null,
+		_mask : null,
+		value : function(v) {
+			if (v typeof == 'undefined')
+				return this._value;
+			else this._value = v;
+			return this;
+		},
+		setValue
+}
+*/
+
+var css = {
+		ololo : null,
+		border : {
+			top : {
+				color : null,
+				style : null,
+				width: null
+			},
+			right : {
+				color : null,
+				style : null,
+				width: null
+			},
+			bottom : {
+				color : null,
+				style : null,
+				width: null
+			},
+			left : {
+				color : null,
+				style : null,
+				width: null
+			}
+		}
+	};
+(function($) {
+
+	
+	
+	
+	var common = {
+			open : function() {
+				
+			},
+			hide : function() {
+				
+			},
+			toggle : function(el) {
+				var el = $(this);
+				if (el.hasClass('open')) {
+					el.removeClass('open');
+					el.addClass('close');
+				} else {
+					el.removeClass('close');
+					el.addClass('open');
+				}
+			}
+	};
+	$('.group').on({
+			click : common.toggle
+	});
+	
+	
+})(jQuery);
+
+$(document).ready(function(){
+	function getValue(item) {
+		var t = typeof item;
+		if (t == 'object') {
+			var s = '';
+			for (i in item)
+				s += ' ' + getValue(item[i]);
+			return s;
+		} else return item;
+	}
+	$('div').bind('click', function(){
+		//for (item in css) {
+		//	console.log( getValue(css[item]) );		
+		//}
+		$('#st').text('');
+		return false;
+	});
+	
+	var el = $('<div>').addClass('group1');
+	var name = 'width';
+	el.css(name, function(ind, val) {
+		alert(name + ' = ' + val);
+		console.log(name + ' = ' + val);
+	});
+	return;
+	//var e = $._data( $(".group")[0], "events" );
+	for (n in e)
+	alert(
+			//$("body").data("events")
+			//$._data( $('.group'), "events" )
+			//$(document).data('events')
+			n
+	);
+	
+	
+	$.fancybox({});
+});
+</script>
+</body>
+</html>

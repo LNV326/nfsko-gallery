@@ -1,0 +1,44 @@
+site_gallery_homepage:
+    pattern:  /
+    defaults: { _controller: SiteGalleryBundle:Show:index }
+site_gallery_validateAll:
+    pattern:  /_validateAll
+    defaults: { _controller: SiteGalleryBundle:Validate:validateAll }
+        
+
+site_gallery_image:
+    pattern: /_image/{iId}
+    defaults: { _controller: SiteGalleryBundle:Show:showImage }      
+site_gallery_showImage:
+    pattern: /_image/{imageId}/_show
+    defaults: { _controller: SiteGalleryBundle:Visibility:showImage }
+site_gallery_hideImage:
+    pattern: /_image/{imageId}/_hide
+    defaults: { _controller: SiteGalleryBundle:Visibility:hideImage }
+site_gallery_removeImage:
+    pattern: /_image/{imageId}/_remove
+    defaults: { _controller: SiteGalleryBundle:Remove:removeImage }
+
+site_gallery_addCategory:
+    pattern: /_add
+    defaults: { _controller: SiteGalleryBundle:Add:addCategory }
+site_gallery_category:
+    pattern: /{cRefId}
+    defaults: { _controller: SiteGalleryBundle:Show:showCategory }   
+site_gallery_setCategoryCover:
+    pattern: /{cRefId}/_cover/{iId}
+    defaults: { _controller: SiteGalleryBundle:Visibility:setCategoryCover }
+
+site_gallery_addAlbum:
+    pattern: /{cRefId}/_add
+    defaults: { _controller: SiteGalleryBundle:Add:addAlbum }
+site_gallery_album:
+    pattern: /{cRefId}/{aRefId}
+    defaults: { _controller: SiteGalleryBundle:Show:showAlbum }    
+site_gallery_setAlbumCover:
+    pattern: /{cRefId}/{aRefId}/_cover/{iId}
+    defaults: { _controller: SiteGalleryBundle:Visibility:setAlbumCover }    
+       
+site_gallery_addImages:
+    pattern: /{cRefId}/{aRefId}/_add
+    defaults: { _controller: SiteGalleryBundle:Add:addImages }

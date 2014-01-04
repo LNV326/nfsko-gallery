@@ -1,0 +1,3 @@
+site_gallery:
+    resource: "@SiteGalleryBundle/Resources/config/routing.yml"
+    prefix:   /gallery

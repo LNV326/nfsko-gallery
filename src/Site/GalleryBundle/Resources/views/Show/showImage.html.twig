@@ -1,0 +1,67 @@
+{% extends "SiteGalleryBundle::gallery.html.twig" %}
+
+{% block title %}Альбом {{ body.image.album.dictionary.title }} | Категория {{ body.image.album.category.name }} | Галерея изображений {{ parent(title) }}{% endblock %}
+
+{% block keywords %}{{ body.image.album.category.name }}, {{ parent(keywords) }}{% endblock %}
+
+{% block location %}
+{% if status=='Success' %}
+	<div class="module-navigate left">
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a href='{{ path('site_gallery_category', {'cRefId':body.image.album.category.getRefId}) }}'>{{ body.image.album.category.name }}</a><a href='{{ path('site_gallery_album', {'cRefId':body.image.album.category.getRefId, 'aRefId':body.image.album.dictionary.getRefId}) }}'>{{ body.image.album.dictionary.title }}</a><a>{{ body.image.getId }}</a>
+	</div>
+	<div class="fb-dialog right">
+		{% if is_granted('ROLE_GAL_EDIT_IMG') %}
+			<a href='{{ path('site_gallery_hideImage', {'imageId':body.image.getId}) }}'>Скрыть</a>
+			 / <a href='{{ path('site_gallery_showImage', {'imageId':body.image.getId}) }}'>Показать</a>
+		{% endif %}
+		{% if is_granted('ROLE_GAL_DEL_IMG') or app.user.getId==body.image.memberId %} 
+			 | <a href='{{ path('site_gallery_removeImage', {'imageId':body.image.getId}) }}'>Удалить</a> 
+		{% endif %}
+		{% if is_granted('ROLE_GAL_EDIT_CAT') %} 
+			 | <a href='{{ path('site_gallery_setCategoryCover', {'cRefId':body.image.album.category.getRefId, 'iId':body.image.getId}) }}'>Обложка категории</a>
+		{% endif %}
+		{% if is_granted('ROLE_GAL_EDIT_ALB') %} 
+			 | <a href='{{ path('site_gallery_setAlbumCover', {'cRefId':body.image.album.category.getRefId, 'aRefId':body.image.album.dictionary.getRefId, 'iId':body.image.getId}) }}'>Обложка альбома</a>
+		{% endif %}
+	</div>
+{% else %}
+	<div class="gallery_navigate left">
+		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>Ошибка</a>
+	</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if status=='Success' %}
+<div class='gallery-container' id='image'>
+	<img class='gallery-image' src='{{ body.imageHostName ~ body.image.getWebPath }}'/>
+	<div class='links'>
+		<div class='title'>Коды:</div>
+		<ul class='content'>
+			<li>
+				<div class='title'>Ссылка: </div>
+				<input type='text' class='content' value='{{ body.imageHostName ~ body.image.getWebPath }}'/>
+			</li>
+			<li>
+				<div class='title'>Картинка в тексте: </div>
+				<input type='text' class='content' value='[img]{{ body.imageHostName ~ body.image.getWebPath }}[/img]'/>
+			</li>
+			<li>
+				<div class='title'>Превью - увеличение по клику: </div>
+				<input type='text' class='content' value='[url={{ body.imageHostName ~ body.image.getWebPath }}][img]{{ body.imageHostName ~ body.image.getWebThumbPath }}[/img][/url]'/>
+			</li>
+		</ul>
+	</div>
+</div>
+<script>
+$(document).ready(function(){ 
+	$('.gallery-container#image').nfsko('gallery');
+});
+</script>
+{% else %}
+	{{ error[0] }}
+	{% if app.user.isMod %}		
+		{{ error.trace }}
+	{% endif %}
+{% endif %}
+{% endblock %}

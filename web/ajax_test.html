@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Ajax Test File</title>
+<script type="text/javascript" src="bundles/sitecore/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="bundles/sitecore/js/jquery.ajaxy.js"></script>
+</head>
+<body>
+<div id='ajax_controls'>
+	<input type='button' value='Load' id='load_button'>
+	<input type='button' value='Load to load =)' id='load_button2'>
+	<a href='/app_dev.php/gallery/cat=0' class='ajaxy'>Main</a><a href='/app_dev.php/gallery/' class='ajaxy'>Gallery</a>
+</div>
+<div id='ajax_content'>
+</div>
+<script>
+;
+(function($) {
+	var $body = $('#ajax_content');
+	$.Ajaxy.configure({
+		'options': {
+			root_url: 'http://symfony.nfsko.mooo.com',
+			base_url: '/app_dev.php/',
+//			auto_ajaxify: true,
+//			method: 'get'
+		},
+        'Controllers': {
+            '_generic': {
+                request: function(){
+                	//alert('_generic request');
+                	// Prepare
+                    var Ajaxy = $.Ajaxy;
+                    // Log what is happening
+                    if ( Ajaxy.options.debug )
+                    	window.console.debug('$.Ajaxy.Controllers._generic.request', [this,arguments]);
+                    // Loading
+                    //$body.addClass('loading');
+                	return true;
+                },
+                response: function(){
+                	//alert('_generic response');
+                    // Prepare
+                    var Ajaxy = $.Ajaxy; var data = this.State.Response.data; var state = this.state||'unknown';
+                    // Log what is happening
+                    if ( Ajaxy.options.debug )
+                    	window.console.debug('$.Ajaxy.Controllers._generic.response', [this,arguments], data, state);
+                    // Loaded
+                    //$body.removeClass('loading');
+                    // Set data
+                    if (data.result)
+                    	$body.html(data.result);
+                    return true;
+                },
+                error: function(){
+                	alert('_generic error');
+                	return true;
+                }
+            },
+            'ajaxy-page': {
+            	classname: 'ajaxy-page',
+            	//matches: /^\/gallery\/?/,
+            	request: function(){
+            		alert('page request');
+            		return true;
+            	},
+            	response: function(){
+            		alert('page response');
+            		return true;
+            	}
+            }
+        }
+	});
+})(jQuery);
+</script>
+</body>
+</html>
