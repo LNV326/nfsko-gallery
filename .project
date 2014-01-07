@@ -42,6 +42,5 @@
 		<nature>com.dubture.composer.core.composerNature</nature>
 		<nature>com.dubture.symfony.core.symfonyNature</nature>
 		<nature>com.dubture.doctrine.core.doctrineNature</nature>
-		<nature>org.eclipse.ptp.rdt.sync.core.remoteSyncNature</nature>
 	</natures>
 </projectDescription>
