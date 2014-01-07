@@ -16,7 +16,12 @@ class Image {
 	const THUMBNAILS_DIR = '/thumbs_x2/';
 	const THUMBNAILS_DIR_OLD = '/thumbs/';
 	const HOST_ADDRESS = 'http://images.nfsko.mooo.com/gallery/';
+	
 	const THUMBNAIL_WIDTH = '320';
+	const THUMBNAIL_HEIGHT = '240';
+	
+	const THUMBNAIL_WIDTH_OLD = '150';
+	const THUMBNAIL_HEIGHT_OLD = '112';	
 	
 	/**
 	 * В случае, если одновременно загружается несколько изображений,
@@ -208,6 +213,19 @@ class Image {
 	}
 	
 	/**
+	 * Создание различных миниатюр для изображения
+	 */
+	public function createThumbs() {
+		// Создание миниатюры
+		$thumb = $this->getAbsoluteThumbPath();
+		$this->createThumb(self::THUMBNAIL_WIDTH, self::THUMBNAIL_HEIGHT, $thumb);
+		// TODO костыль
+		// Создание миниатюры для старой галереи
+		$thumb = $this->getAbsoluteThumbPath_old();
+		$this->createThumb(self::THUMBNAIL_WIDTH_OLD, self::THUMBNAIL_HEIGHT_OLD, $thumb);
+	}
+	
+	/**
 	 * @ORM\PrePersist()
 	 * Действия перед вставкой записи в базу данных
 	 */
@@ -221,13 +239,8 @@ class Image {
 		$this->fileName = $this->memberId."_".(microtime(true)*10000).".".$this->file->guessExtension();	
 		// Перемещение и переименование файла
 		$this->file->move($this->getUploadDir(), $this->fileName);
-		// Создание миниатюры		
-		$thumb = $this->getAbsoluteThumbPath();
-		$this->createThumb(320,240,$thumb);
-		// TODO костыль
-		// Создание миниатюры для старой галереи
-		$thumb = $this->getAbsoluteThumbPath_old();
-		$this->createThumb(150,112,$thumb);
+		// Создание миниатюр
+		$this->createThumbs();
 		$this->file = null;
 	}
 	

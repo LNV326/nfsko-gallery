@@ -103,15 +103,15 @@ class ImageAlbum {
 		$this->images = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
-	protected function getAbsoluteDir() {
+	public function getAbsoluteDir() {
 		return Image::MAIN_UPLOAD_DIR.$this->dirName."/";
 	}
 	
-	protected function getAbsoluteThumbDir() {
+	public function getAbsoluteThumbDir() {
 		return $this->getAbsoluteDir().Image::THUMBNAILS_DIR;
 	}
 	
-	protected function getAbsoluteThumbDir_old() {
+	public function getAbsoluteThumbDir_old() {
 		return $this->getAbsoluteDir().Image::THUMBNAILS_DIR_OLD;
 	}
 	
