@@ -6,12 +6,12 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>com.dubture.doctrine.core.doctrineBuilder</name>
+			<name>com.dubture.symfony.core.symfonyBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.dubture.symfony.core.symfonyBuilder</name>
+			<name>com.dubture.doctrine.core.doctrineBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

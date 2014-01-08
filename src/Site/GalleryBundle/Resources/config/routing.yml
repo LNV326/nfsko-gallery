@@ -4,7 +4,9 @@ site_gallery_homepage:
 site_gallery_validateAll:
     pattern:  /_validateAll
     defaults: { _controller: SiteGalleryBundle:Validate:validateAll }
-        
+site_gallery_userImages:
+    pattern:  /_user/{uId}
+    defaults: { _controller: SiteGalleryBundle:Show:showUserImages }     
 
 site_gallery_image:
     pattern: /_image/{iId}

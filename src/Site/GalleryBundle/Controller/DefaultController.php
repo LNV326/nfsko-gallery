@@ -21,6 +21,7 @@ class DefaultController extends Controller {
 	protected $categoryList = null;
 	protected $category = null;
 	protected $album = null;
+	protected $images = null;
 	
 	protected $freeSpace = 0;
 	protected $occupSpace = 0;
@@ -142,6 +143,18 @@ class DefaultController extends Controller {
 			$this->freeSpace = $this->totalSpace - $this->occupSpace;
 		}
 		return $this->freeSpace;
+	}
+	
+	protected function getUserImages($uId, $withAlbum = false, $withCategory = false) {
+		$repo = $this->getDoctrine()->getManager()->getRepository('SiteGalleryBundle:Image');
+		if ( $withAlbum ) {
+			if ( $withCategory )
+				throw new \Exception('Функция не реализована');
+			else $this->images = $repo->getUserImages( $uId );
+		} else {
+			$this->images = $repo->getUserImages( $uId );
+		}
+		return $this->images;
 	}
 }
 ?>

@@ -12,11 +12,7 @@ site_gallery_removeImages:
     pattern: /album/{albumId}/removeImages
     defaults: { _controller: SiteGalleryBundle:Manage:removeImages }
 
-site_gallery_user:
-    pattern:  /user/{id}
-    defaults: { _controller: SiteGalleryBundle:Show:showUser }
-
-    
+   
 
 site_gallery_setStatusImages:
     pattern: /album/{albumId}/status

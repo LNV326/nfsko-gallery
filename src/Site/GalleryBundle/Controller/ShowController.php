@@ -129,7 +129,6 @@ class ShowController extends DefaultController {
 	 * Возвращает изображение
 	 * @param unknown $iId
 	 * @throws AccessDeniedHttpException
-	 * @throws \Exception
 	 * @return \Site\GalleryBundle\Controller\Response
 	 * 
 	 * @Template()
@@ -144,6 +143,36 @@ class ShowController extends DefaultController {
 			$this->body['categoryList'] = $this->categoryList;
 			$this->getImage($iId, false, false);
 			$this->body['image'] = $this->image;
+			$this->body['imageHostName'] = $this->imageHostName;
+		} catch (\Exception $e) {
+			$this->error[] = $e->getMessage();
+			if ( $this->getUser()->isMod() )
+				$this->error['trace'] = $e->getTraceAsString();
+		}
+		return $this->createResponse();
+	}
+	
+	/**
+	 * Возвращает загруженные пользователем изображения
+	 * @param unknown $uId
+	 * @return multitype:string multitype:
+	 * 
+	 * @Template()
+	 */
+	public function showUserImagesAction($uId) {
+		try {
+			$this->action = __FUNCTION__;
+			$this->initVars();
+			$this->getCategoryList( false );
+			$this->body['categoryList'] = $this->categoryList;
+			// Необходимо получить пользователя
+			// TODO Необходимо вынести получение информации о пользователе в родительский класс
+			$repo = $this->getDoctrine()->getManager()->getRepository('SiteCoreBundle:UserConfigInfo');
+			if ( is_null( $user = $repo->find( $uId ) ) )
+				throw new NoResultException();		
+			$this->body['user'] = $user;
+			$this->getUserImages( $uId, false, false );
+			$this->body['images'] = $this->images;
 			$this->body['imageHostName'] = $this->imageHostName;
 		} catch (\Exception $e) {
 			$this->error[] = $e->getMessage();

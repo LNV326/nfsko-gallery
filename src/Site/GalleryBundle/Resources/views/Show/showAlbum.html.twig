@@ -26,13 +26,15 @@
 {% if status=='Success' %}
 <ul class='gallery-container' id='album'>
 	{% set imageHostName = body.imageHostName %}
-	{% set imageList = body.album.images %}
+	{% set imageList = body.album.getImages %}
 	{% set userId = app.user.getId %}
 	{% for image in imageList %}
 		{% if is_granted('ROLE_GAL_EDIT_IMG') or image.visibility==1 or image.memberId==userId %}
 			{% block image_block %}
 			<li class='gallery_thumb small'>
-				{#<a href='{{ imageHostName ~ image.getWebPath }}' status="{% if image.visibility==1 %}show{% else %}hide{% endif %}" imgid="{{ image.id }}"></a>#}
+{# 				<a href='{{ imageHostName ~ image.getWebPath }}' status="{% if image.visibility==1 %}show{% else %}hide{% endif %}" imgid="{{ image.id }}">#}
+{# 					<img lazysrc='{{ imageHostName ~ image.getWebThumbPath }}'/>#}
+{# 				</a>#}
 				<a href='{{ path('site_gallery_image', {'iId':image.id}) }}' status="{% if image.visibility==1 %}show{% else %}hide{% endif %}" imgid="{{ image.id }}">
 					<img lazysrc='{{ imageHostName ~ image.getWebThumbPath }}'/>
 				</a>
@@ -40,7 +42,7 @@
 			{% endblock %}
 		{% endif %}
 	{% endfor %}
-	<div id='gallery_exception' {% if body.album.getImages.count>0 %}class='hide'{% endif %}>No images in album</div>
+	<div id='gallery_exception' {% if imageList.count>0 %}class='hide'{% endif %}>No images in album</div>
 </ul>
 <script>
 $(document).ready(function(){ 
