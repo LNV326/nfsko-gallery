@@ -5,23 +5,6 @@
 {% block keywords %}{{ body.album.category.name }}, {{ parent(keywords) }}
 {% endblock %}
 
-{% block location %}
-{% if status=='Success' %}
-	<div class="module-navigate left">
-		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a href='{{ path('site_gallery_category', {'cRefId':body.album.category.getRefId}) }}'>{{ body.album.category.name }}</a><a>{{ body.album.dictionary.title }}</a>
-	</div>
-	<div class="fb-dialog right">
-		{% if is_granted('ROLE_GAL_ADD_IMG') or body.album.getAllowAdd %}
-			<a href='{{ path('site_gallery_addImages', {'cRefId':body.album.category.getRefId,'aRefId':body.album.dictionary.refId}) }}'>Добавить</a>
-		{% endif %}
-	</div>
-{% else %}
-	<div class="gallery_navigate left">
-		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>Ошибка</a>
-	</div>
-{% endif %}
-{% endblock %}
-
 {% block content %}
 {% if status=='Success' %}
 <ul class='gallery-container' id='album'>

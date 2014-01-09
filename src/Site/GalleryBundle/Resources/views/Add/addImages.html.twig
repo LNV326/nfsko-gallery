@@ -40,7 +40,7 @@
 			<h1>Добавление изображений</h1>
 			<h3>Название категории: {{ body.album.category.name }}</h3>
 			<h3>Название альбома: {{ body.album.name }}</h3>
-			<h4>Вам доступно: {{ macros.bytesToSize(body.space.free) }}/{{ macros.bytesToSize(body.space.total) }}</h4>		
+			{% if body.album.getAllowAdd == true %}<h4>Вам доступно: {{ macros.bytesToSize(body.space.free) }}/{{ macros.bytesToSize(body.space.total) }}</h4>{% endif %}
 			<span>Выберите файлы:</span> <input type='file' multiple id='input-files' destination='{{ path('site_gallery_addImages', {'cRefId': app.request.attributes.get('cRefId'),'aRefId': app.request.attributes.get('aRefId')}) }}'></input>	
 		{% endblock %}
 		{% block content %}

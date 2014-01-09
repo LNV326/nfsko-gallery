@@ -1,26 +1,8 @@
 {% extends "SiteGalleryBundle::gallery.html.twig" %}
 
-{% block title %}
-Категория {{ body.category.name }} | Галерея изображений {{ parent(title) }}
+{% block title %}Категория {{ body.category.name }} | Галерея изображений {{ parent(title) }}
 {% endblock %}
 {% block keywords %}{{ body.category.name }}, {{ parent(keywords) }}
-{% endblock %}
-
-{% block location %}
-{% if status=='Success' %}
-	<div class="module-navigate left">
-		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>{{ body.category.name }}</a>
-	</div>
-	<div class="fb-dialog right">
-		{% if is_granted('ROLE_GAL_ADD_ALB') %}
-			<a href='{{ path('site_gallery_addAlbum', {'cRefId':body.category.getRefId}) }}'>Добавить</a>
-		{% endif %}
-	</div>
-{% else %}
-	<div class="gallery_navigate left">
-		<a href='{{ path('site_gallery_homepage') }}'>{% trans %}Галерея{% endtrans %}</a><a>Ошибка</a>
-	</div>
-{% endif %}
 {% endblock %}
 
 {% block content %}
