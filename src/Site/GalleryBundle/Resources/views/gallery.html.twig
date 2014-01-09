@@ -22,7 +22,7 @@
 		{% if body.category is defined %}
 			{% if is_granted('ROLE_GAL_ADD_ALB') %}<a href='{{ path('site_gallery_addAlbum', {'cRefId':body.category.getRefId}) }}'>Добавить</a>{% endif %}
 		{% elseif body.album is defined %}
-			{% if is_granted('ROLE_GAL_ADD_IMG') or body.album.getAllowAdd %}<a href='{{ path('site_gallery_addImages', {'cRefId':body.album.category.getRefId,'aRefId':body.album.dictionary.refId}) }}'>Добавить</a>{% endif %}
+			{% if is_granted('ROLE_GAL_ADD_IMG') or (body.album.getAllowAdd and app.user.getId != 0) %}<a href='{{ path('site_gallery_addImages', {'cRefId':body.album.category.getRefId,'aRefId':body.album.dictionary.refId}) }}'>Добавить</a>{% endif %}
 		{% elseif body.image is defined %}
 			{% if is_granted('ROLE_GAL_EDIT_IMG') %}<a href='{{ path('site_gallery_hideImage', {'imageId':body.image.getId}) }}'>Скрыть</a> / <a href='{{ path('site_gallery_showImage', {'imageId':body.image.getId}) }}'>Показать</a>{% endif %}
 			{% if is_granted('ROLE_GAL_DEL_IMG') or app.user.getId==body.image.memberId %} | <a href='{{ path('site_gallery_removeImage', {'imageId':body.image.getId}) }}'>Удалить</a>{% endif %}

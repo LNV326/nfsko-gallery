@@ -31,6 +31,7 @@ class ShowController extends DefaultController {
 		 * http://images.nfsko.ru/index.php?page=gallery&view=160
 		 * http://images.nfsko.ru/index.php?page=gallery&user=22753
 		 * http://images.nfsko.ru/index.php?page=gallery&view=my_files
+		 * http://images.nfsko.ru/image.php?gallery=view&image=1542
 		 */
 		$query = $this->getRequest()->query;
 		$logger = $this->get('gallery_redirect_logger');
@@ -56,6 +57,29 @@ class ShowController extends DefaultController {
 				throw $this->createNotFoundException(sprintf('Альбома %s не существует',$id));		
 			}
 		}
+		if ( $query->has('user') ) {
+			$id = $query->get('user');
+			$repository = $this->getDoctrine()->getManager()->getRepository('SiteCoreBundle:UserConfigInfo');
+			try {
+				// TODO Получение пользователя необходимо вынести в отдельный метод
+				if ( $user = $repository->find( $id ) ) {
+					$logger->info( sprintf('Редирект %d с %s в изображения пользователя "%d" - для %s', self::REDIRECT_CODE, $this->getRequest()->getQueryString(), $user->getId(), $this->getRequest()->headers->get('User-Agent') ) );
+					return $this->redirect($this->generateUrl( 'site_gallery_userImages', array('uId' => $user->getId()) ), self::REDIRECT_CODE );
+				} else throw new \Exception();				
+			} catch (\Doctrine\Orm\NoResultException $e) {
+				throw $this->createNotFoundException(sprintf('Пользователя %s не существует',$id));		
+			}
+		}
+		if ( $query->has('image') ) {
+			$id = $query->get('image');
+			try {
+				$image = $this->getImage($id, false, false);
+				$logger->info( sprintf('Редирект %d с %s на изображение "%d" - для %s', 302, $this->getRequest()->getQueryString(), $image->getId(), $this->getRequest()->headers->get('User-Agent') ) );
+				return $this->redirect($this->generateUrl( 'site_gallery_image', array('iId' => $image->getId()) ), 302 );
+			} catch (\Doctrine\Orm\NoResultException $e) {
+				throw $this->createNotFoundException(sprintf('Изображениея %s не существует',$id));
+			}
+		}		
 		// === Редирект (конец) ===	
 					
 		try {
