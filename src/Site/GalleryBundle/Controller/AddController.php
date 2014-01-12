@@ -183,7 +183,7 @@ class AddController extends DefaultController {
 				$errors = $this->get('validator')->validate( $image );				
 				if ( count($errors) > 0 )
 					throw new \Exception( (string) $errors );			
-				if ($this->freeSpace < filesize( $image->getAbsolutePath() ))
+				if ($this->freeSpace < $image->getFile()->getClientSize() )
 					throw new \Exception('Невозможно загрузить изображение. Превышена дисковая квота.');
 				// Добавление в очередь на загрузку в БД
 				$em->persist($image);

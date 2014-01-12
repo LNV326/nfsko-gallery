@@ -85,7 +85,7 @@ $(function() {
 			var t = this;
 			this.progressDOM = $('<div>').appendTo( this.element );
 			this.progressDOM.progressbar({
-				max : 100, // В процентах
+				max : 101, // В процентах
 				value : 0,
 				complete : function( event, ui ) {
 					setTimeout(function() {
@@ -122,7 +122,7 @@ $(function() {
 			switch ( response.status ) {
 				case this.response_statuses.ST_SUCCESS :
 					this.element.addClass('new');
-					this.updateProgressBar(100);
+					this.updateProgressBar(101);
 					//this.image( response.body.image.url );
 					//this.imageDOM.attr( 'imgid', response.body.image.id )
 					return response.body.image.html;
