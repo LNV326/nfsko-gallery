@@ -1,0 +1,227 @@
+@CHARSET "UTF-8";
+
+#body_module {
+	width: 96%;
+	margin: 0 2%;
+}
+
+{* == Общее == *}
+{* Фон галереи *}
+.gallery_new_bg {
+	background-color: #202020;
+	width: 100%;
+	border: 1px solid black;
+	text-align: left;
+}
+{* Контейнер с превью изображений *}
+.gallery_new_container {
+	margin: 10px 70px;
+}
+{* Превью - контейнер *}
+.gallery_new_thumb {
+	border: 1px solid #424242;
+	overflow: hidden;
+	position: relative;
+	display: inline-block;
+	margin: 0px;
+}
+{* Превью - область центрирования и обрезки *}
+.gallery_new_thumb_img {
+	display: table-cell;
+	vertical-align: middle;
+}
+{* Превью - изображение *}
+.gallery_new_thumb_img img {
+	width: 100%;
+	border: 0px;
+}
+{* Превью - название *}
+.gallery_new_thumb_name {
+	background: url("/bundles/sitecore/images/fon.gif") repeat;
+	width: 100%;
+	height: 20px;
+	position: absolute;
+	font-size: 12px;
+	line-height: 20px;
+	color: white;
+	opacity: 0.8;
+	overflow: hidden;
+	font-weight: bold;
+}
+{* == Конкретика == *}
+{* Большое превью - контейнер *}
+.gallery_new_thumb-big {
+	width: 305px;
+	height: 173px;
+	/* margin-top: 2px; */
+	margin: 2px;
+	display: block;
+	float: left;
+}
+{* Большое превью - область центрирования и обрезки *}
+.gallery_new_thumb-big .gallery_new_thumb_img {
+	width: 305px;
+	height: 250px;
+}
+{* Большое превью - изображение *}
+.gallery_new_thumb-big .gallery_new_thumb_img img {
+	margin-top: -75px;
+}
+{* Большое превью - название *}
+.gallery_new_thumb-big .gallery_new_thumb_name {
+	top: 10px;
+}
+{* Стрелка перед названием превью *}
+.gallery_new_arrow b {
+	background: url("/bundles/sitecore/images/lil.gif") no-repeat scroll 0 center transparent;
+    margin-left: 10px;
+    padding-left: 15px;
+}
+{* Большое превью - слой поверх превью (для отображения маленьких превью) *}
+.gallery_new_thumb-big_overlay {
+	width: 303px;
+	height: 171px;
+	border: 1px solid orange;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+{* Большое превью - фон оверлея *}
+.gallery_new_thumb-big_overlay_bg {
+	background: url("/bundles/sitecore/images/bg.gif") repeat;
+	opacity: 0.8;
+	width: 100%;
+	height: 100%;
+}
+{* Маленькое превью - контейнер *}
+.gallery_new_thumb-small {
+	width: 150px;
+	height: 84px;
+}
+.gallery_new_thumb-big_overlay .gallery_new_thumb-small {
+	position: absolute;
+	display: block;
+}
+{* Маленькое превью - область центрирования и обрезки *}
+.gallery_new_thumb-small .gallery_new_thumb_img {
+	width: 150px;
+	height: 112px;
+}
+{* Маленькое превью - изображение *}
+.gallery_new_thumb-small .gallery_new_thumb_img img {
+	margin-top: -25px;
+}
+{* Маленькое превью - название *}
+.gallery_new_thumb-small .gallery_new_thumb_name {
+	top: 8px;
+}
+.gallery_new_thumb-small_1 {
+	top: 0;
+	left: 0;
+}
+.gallery_new_thumb-small_2 {
+	top: 0;
+	right: 0;
+}
+.gallery_new_thumb-small_3 {
+	bottom: 0;
+	left: 0;
+}
+.gallery_new_thumb-small_4 {
+	bottom: 0;
+	right: 0;
+}
+{* Маленькое превью для отображения числа не уместившихся альбомов *}
+.gallery_new_thumb-small-others {
+	witdh: 100%;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 14px;
+	margin-top: -30px;	
+}
+{* Текущее маленькое превью под курсором мыши *}
+#gallery_new_thumb-small_selected {
+	border: 1px solid orange;
+	z-index: 2;
+	box-shadow: 0 0 10px 5px black;
+}
+{* Группа превью *}
+.gallery_new_images_group {
+	width: 308px;
+	height: auto;
+	display: inline-block;
+	margin-right: -2px;
+	vertical-align: top;
+}
+{* Группа превью - конкретное превью *}
+.gallery_new_images_group .gallery_new_thumb {
+	margin-top: 1px;
+	margin-right: -1px;
+}
+{* Последнеие добавленные изображения - конкретное превью*}
+.gallery_new_images_last .gallery_new_thumb {
+	margin-top: 1px;
+	margin-right: -1px;
+}
+
+
+.gallery_new_line {
+	padding: 6px 0;
+	height: auto;
+	font-size: 12px;
+	background-color: #121212;
+	border: 1px solid transparent;
+	width: 100%;
+}
+.gallery_new_line_name {
+	height: 20px;
+	line-height: 20px;
+	background-image: url(/bundles/sitecore/images/fon.gif);
+	border: 1px solid black;
+	padding: 0 5px;	
+}
+.gallery_new_line_name a {
+	background: url(/bundles/sitecore/images/lil.gif) no-repeat 0 center;
+	padding: 0 5px 0 15px;
+}
+
+
+.gallery_new_droparea {
+	margin: 10px;
+	padding: 10px;
+	background: #646464;
+}
+.gallery_new_droparea_text {
+	margin: 10px;
+	padding: 10px;
+	background: #646464;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 14px;
+}
+
+.gallery_new_thumb .status {
+	position: absolute;
+	background-color: #242424;
+	height:12px;
+	width:100%;
+	left:0;
+	bottom: 0;
+	box-shadow: 0 0 2px black;
+}
+.gallery_new_thumb .progress {
+	background-color:#2586d0;
+	position: absolute;
+	height:100%;
+	left:0;
+	width:0;
+	box-shadow: 0 0 1px black inset;	
+	-moz-transition:0.25s;
+	-webkit-transition:0.25s;
+	-o-transition:0.25s;
+	transition:0.25s;
+}
+.gallery_new_thumb .done {
+	width: 100% !important;
+}

@@ -54,7 +54,7 @@ class ImageCategory {
 		$this->position = 21;
 	}
 	
-	protected function getAbsoluteDir() {
+	public function getAbsoluteDir() {
 		return Image::MAIN_UPLOAD_DIR.$this->dirName."/";
 	}
 	

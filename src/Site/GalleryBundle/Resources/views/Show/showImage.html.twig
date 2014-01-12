@@ -17,7 +17,7 @@
 		<div class='right'>
 			<div>Категория: <a href='{{ path('site_gallery_category', {'cRefId':body.image.album.category.getRefId}) }}'>{{ body.image.album.category.name }}</a></div>
 			<div>Альбом: <a href='{{ path('site_gallery_album', {'cRefId':body.image.album.category.getRefId, 'aRefId':body.image.album.dictionary.getRefId}) }}'>{{ body.image.album.dictionary.title }}</a></div>
-			<div id='image-size'>Разрешение: </div>	
+			<div id='image-size'>Разрешение: {{ body.image.getWidth ~ 'x' ~ body.image.getHeight }} px</div>	
 		</div>		
 	</div>
 	<div class='image-links'>

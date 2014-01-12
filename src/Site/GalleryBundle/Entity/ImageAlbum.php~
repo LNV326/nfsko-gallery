@@ -103,12 +103,16 @@ class ImageAlbum {
 		$this->images = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 	
-	protected function getAbsoluteDir() {
+	public function getAbsoluteDir() {
 		return Image::MAIN_UPLOAD_DIR.$this->dirName."/";
 	}
 	
-	protected function getAbsoluteThumbDir() {
+	public function getAbsoluteThumbDir() {
 		return $this->getAbsoluteDir().Image::THUMBNAILS_DIR;
+	}
+	
+	public function getAbsoluteThumbDir_old() {
+		return $this->getAbsoluteDir().Image::THUMBNAILS_DIR_OLD;
 	}
 	
 	/**
@@ -123,6 +127,9 @@ class ImageAlbum {
 		if (!is_dir($path = $this->getAbsoluteThumbDir())) {
 			mkdir($path, 0777);
 		};
+		if (!is_dir($path = $this->getAbsoluteThumbDir_old())) {
+			mkdir($path, 0777);
+		};
 	}
 	
 	/**
@@ -131,6 +138,9 @@ class ImageAlbum {
 	 */
 	public function removeDir() {
 		if (is_dir($path = $this->getAbsoluteThumbDir())) {
+			rmdir($path);
+		}
+		if (is_dir($path = $this->getAbsoluteThumbDir_old())) {
 			rmdir($path);
 		}
 		if (is_dir($path = $this->getAbsoluteDir())) {
@@ -320,5 +330,51 @@ class ImageAlbum {
     public function getDictionary()
     {
         return $this->dictionary;
+    }
+
+    /**
+     * Set allowAdd
+     *
+     * @param integer $allowAdd
+     * @return ImageAlbum
+     */
+    public function setAllowAdd($allowAdd)
+    {
+        $this->allowAdd = $allowAdd;
+    
+        return $this;
+    }
+
+    /**
+     * Get allowAdd
+     *
+     * @return integer 
+     */
+    public function getAllowAdd()
+    {
+        return $this->allowAdd;
+    }
+
+    /**
+     * Set dictId
+     *
+     * @param integer $dictId
+     * @return ImageAlbum
+     */
+    public function setDictId($dictId)
+    {
+        $this->dictId = $dictId;
+    
+        return $this;
+    }
+
+    /**
+     * Get dictId
+     *
+     * @return integer 
+     */
+    public function getDictId()
+    {
+        return $this->dictId;
     }
 }

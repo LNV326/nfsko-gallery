@@ -158,7 +158,7 @@ class AddController extends DefaultController {
 			$this->getAlbum($cRefId, $aRefId);
 			$this->body['album'] = $this->album;
 			$logger->warn(sprintf('%s (%d) пытается добавить изображение в альбом "%s" в категории "%s"', $this->getUser()->getUsername(), $this->getUser()->getId(), $this->album->getDictionary()->getRefId(), $this->album->getCategory()->getRefId()) );
-			if ( ( false === $this->get('security.context')->isGranted('ROLE_GAL_ADD_IMG') ) && ( false == $this->album->getAllowAdd() || 0 == $this->getUser()-getId() ) ) {
+			if ( ( false === $this->get('security.context')->isGranted('ROLE_GAL_ADD_IMG') ) && ( false == $this->album->getAllowAdd() || 0 == $this->getUser()->getId() ) ) {
 				throw new AccessDeniedException();
 			}
  			$this->getUserSpace();

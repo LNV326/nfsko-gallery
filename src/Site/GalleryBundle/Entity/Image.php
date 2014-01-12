@@ -2,6 +2,7 @@
 namespace Site\GalleryBundle\Entity;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use Site\CoreBundle\Entity\UserConfigInfo as UserConfigInfo;
@@ -75,6 +76,10 @@ class Image {
 	 */
 	protected $status;
 	
+	protected $width;
+	
+	protected $height;
+	
 	// ===== Связи =====
 	
 	/**
@@ -92,7 +97,7 @@ class Image {
 	
 	public function __construct($count = 0) {
 		$this->count = $count;
-		$this->id = 0;
+		$this->id = 0; 
 		$this->file = null;
 	}
 	
@@ -263,10 +268,9 @@ class Image {
 		if ( file_exists( $file = $this->getAbsoluteThumbPath_old() ) )
 			unlink($file);
 	}
-	
-	
-
 	// ===== Автозаполнение =====
+
+
 
     /**
      * Get id
@@ -275,6 +279,8 @@ class Image {
      */
     public function getId()
     {
+    	if ( file_exists($this->getAbsolutePath()) )
+    		list($this->width, $this->height) = getimagesize( $this->getAbsolutePath() );
         return $this->id;
     }
 
@@ -356,7 +362,7 @@ class Image {
     public function setFileName($fileName)
     {
         $this->fileName = $fileName;
-    
+   
         return $this;
     }
 
@@ -414,5 +420,16 @@ class Image {
     public function getAlbum()
     {
         return $this->album;
+    }
+    
+    
+    public function getWidth()
+    {
+        return $this->width;
+    }
+    
+    public function getHeight()
+    {
+    	return $this->height;
     }
 }

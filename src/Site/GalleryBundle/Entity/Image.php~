@@ -2,6 +2,7 @@
 namespace Site\GalleryBundle\Entity;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use Site\CoreBundle\Entity\UserConfigInfo as UserConfigInfo;
@@ -16,7 +17,12 @@ class Image {
 	const THUMBNAILS_DIR = '/thumbs_x2/';
 	const THUMBNAILS_DIR_OLD = '/thumbs/';
 	const HOST_ADDRESS = 'http://images.nfsko.mooo.com/gallery/';
+	
 	const THUMBNAIL_WIDTH = '320';
+	const THUMBNAIL_HEIGHT = '240';
+	
+	const THUMBNAIL_WIDTH_OLD = '150';
+	const THUMBNAIL_HEIGHT_OLD = '112';	
 	
 	/**
 	 * В случае, если одновременно загружается несколько изображений,
@@ -30,7 +36,6 @@ class Image {
 	protected $count = 0; 
 
 	/**
-	 * @Assert\File(maxSize="6000000")
 	 * Файл изображения
 	 */
 	private $file;
@@ -71,6 +76,10 @@ class Image {
 	 */
 	protected $status;
 	
+	protected $width;
+	
+	protected $height;
+	
 	// ===== Связи =====
 	
 	/**
@@ -88,6 +97,11 @@ class Image {
 	
 	public function __construct($count = 0) {
 		$this->count = $count;
+		$this->id = 0; 
+		$this->file = null;
+		if ( file_exists($this->getAbsolutePath()) ) {
+			list($this->width, $this->height) = getimagesize( $this->getAbsolutePath() );
+		}
 	}
 	
 	/**
@@ -129,7 +143,9 @@ class Image {
 	 * @return Ambigous <NULL, string>
 	 */
 	public function getWebPath() {
-		return $this->album->getDirName().'/'.$this->fileName;
+		if ($this->album)
+			return $this->album->getDirName().'/'.$this->fileName;
+		else return null;
 	}
 	
 	/**
@@ -151,7 +167,9 @@ class Image {
 	 * @return Ambigous <NULL, string>
 	 */
 	public function getWebThumbPath() {
-		return $this->album->getDirName().self::THUMBNAILS_DIR.$this->fileName;
+		if ($this->album)
+			return $this->album->getDirName().self::THUMBNAILS_DIR.$this->fileName;
+		else return null;
 	}
 		
 	/**
@@ -203,27 +221,42 @@ class Image {
 	}
 	
 	/**
-	 * @ORM\PrePersist()
-	 * Действия перед вставкой записи в базу данных
+	 * Создание различных миниатюр для изображения
 	 */
-	public function uploadFile() {
-		// Пишут, что надо вызвать getFile, иначе поле file может оказаться пустым
-		// ... поверим...
-		if (null === $this->getFile()) {
-			return;
-		}
-		// Создание имени файла как ID пользователя и метки времени
-		$this->fileName = $this->memberId."_".(microtime(true)*10000).".".$this->file->guessExtension();	
-		// Перемещение и переименование файла
-		$this->file->move($this->getUploadDir(), $this->fileName);
-		// Создание миниатюры		
+	public function createThumbs() {
+		// Создание миниатюры
 		$thumb = $this->getAbsoluteThumbPath();
-		$this->createThumb(320,240,$thumb);
+		$this->createThumb(self::THUMBNAIL_WIDTH, self::THUMBNAIL_HEIGHT, $thumb);
 		// TODO костыль
 		// Создание миниатюры для старой галереи
 		$thumb = $this->getAbsoluteThumbPath_old();
-		$this->createThumb(150,112,$thumb);
-		$this->file = null;
+		$this->createThumb(self::THUMBNAIL_WIDTH_OLD, self::THUMBNAIL_HEIGHT_OLD, $thumb);
+	}
+	
+	/**
+	 * @ORM\PrePersist()
+	 * Действия перед вставкой записи в базу данных
+	 */
+	public function createFileName() {
+		if (null !== $this->getFile()) {
+			// Создание имени файла как ID пользователя и метки времени
+			$this->fileName = $this->memberId."_".(microtime(true)*10000).".".$this->getFile()->guessExtension();
+		} else throw new \Exception('File is not set');
+	}
+	
+	/**
+	 * @ORM\PostPersist()
+	 * Действия после вставки записи в базу данных
+	 * Перемещать файл необходимо после того, как запись создана в БД, иначе на сервере будут лежать левые файлы, если запись не создастся.
+	 */
+	public function uploadFile() {
+		if (null !== $this->getFile()) {
+			// Перемещение и переименование файла
+			$this->getFile()->move( $this->getUploadDir(), $this->fileName );
+			// Создание миниатюр
+			$this->createThumbs();
+			$this->file = null;
+		} else throw new \Exception('File is not set');
 	}
 	
 	/**
@@ -231,161 +264,14 @@ class Image {
 	 * Действия при удалении записи из базы данных
 	 */
 	public function removeFile() {
-		if (file_exists($file = $this->getAbsolutePath()))
+		if ( file_exists( $file = $this->getAbsolutePath() ) )
 			unlink($file);
-		if (file_exists($file = $this->getAbsoluteThumbPath()))
+		if ( file_exists( $file = $this->getAbsoluteThumbPath() ) )
+			unlink($file);
+		if ( file_exists( $file = $this->getAbsoluteThumbPath_old() ) )
 			unlink($file);
 	}
-	
-	
-
 	// ===== Автозаполнение =====
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
-    /**
-     * Set memberId
-     *
-     * @param integer $memberId
-     * @return Image
-     */
-    public function setMemberId($memberId)
-    {
-        $this->memberId = $memberId;
-    
-        return $this;
-    }
-
-    /**
-     * Get memberId
-     *
-     * @return integer 
-     */
-    public function getMemberId()
-    {
-        return $this->memberId;
-    }
-
-    /**
-     * Set memberName
-     *
-     * @param string $memberName
-     * @return Image
-     */
-    public function setMemberName($memberName)
-    {
-        $this->memberName = $memberName;
-    
-        return $this;
-    }
-
-    /**
-     * Get memberName
-     *
-     * @return string 
-     */
-    public function getMemberName()
-    {
-        return $this->memberName;
-    }
-
-    /**
-     * Set albumId
-     *
-     * @param integer $albumId
-     * @return Image
-     */
-    public function setAlbumId($albumId)
-    {
-        $this->albumId = $albumId;
-    
-        return $this;
-    }
-
-    /**
-     * Get albumId
-     *
-     * @return integer 
-     */
-    public function getAlbumId()
-    {
-        return $this->albumId;
-    }
-
-    /**
-     * Set fileName
-     *
-     * @param string $fileName
-     * @return Image
-     */
-    public function setFileName($fileName)
-    {
-        $this->fileName = $fileName;
-    
-        return $this;
-    }
-
-    /**
-     * Get fileName
-     *
-     * @return string 
-     */
-    public function getFileName()
-    {
-        return $this->fileName;
-    }
-
-    /**
-     * Set visibility
-     *
-     * @param boolean $visibility
-     * @return Image
-     */
-    public function setVisibility($visibility)
-    {
-        $this->visibility = $visibility;
-    
-        return $this;
-    }
-
-    /**
-     * Get visibility
-     *
-     * @return boolean 
-     */
-    public function getVisibility()
-    {
-        return $this->visibility;
-    }
-
-    /**
-     * Set album
-     *
-     * @param \Site\GalleryBundle\Entity\ImageAlbum $album
-     * @return Image
-     */
-    public function setAlbum(\Site\GalleryBundle\Entity\ImageAlbum $album = null)
-    {
-        $this->album = $album;
-    
-        return $this;
-    }
-
-    /**
-     * Get album
-     *
-     * @return \Site\GalleryBundle\Entity\ImageAlbum 
-     */
-    public function getAlbum()
-    {
-        return $this->album;
-    }
 }
