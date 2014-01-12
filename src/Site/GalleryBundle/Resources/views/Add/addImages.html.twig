@@ -40,7 +40,9 @@
 			<h1>Добавление изображений</h1>
 			<h3>Название категории: {{ body.album.category.name }}</h3>
 			<h3>Название альбома: {{ body.album.name }}</h3>
-			{% if body.album.getAllowAdd == true %}<h4>Вам доступно: {{ macros.bytesToSize(body.space.free) }}/{{ macros.bytesToSize(body.space.total) }}</h4>{% endif %}
+			<h4>Формат изображений: <b>Jpeg</b></h4>
+			<h4>Максимальный размер файла: <b>1 Мб</b></h4>
+			{% if body.album.getAllowAdd == true %}<h4>Вам доступно: <b>{{ macros.bytesToSize(body.space.free) }}</b> / <b>{{ macros.bytesToSize(body.space.total) }}</b></h4>{% endif %}
 			<span>Выберите файлы:</span> <input type='file' multiple id='input-files' destination='{{ path('site_gallery_addImages', {'cRefId': app.request.attributes.get('cRefId'),'aRefId': app.request.attributes.get('aRefId')}) }}'></input>	
 		{% endblock %}
 		{% block content %}

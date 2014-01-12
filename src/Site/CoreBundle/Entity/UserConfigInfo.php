@@ -117,8 +117,11 @@ class UserConfigInfo implements UserInterface
 		return '';
 	}
 	public function getRoles() {
-		$roles = array('IS_AUTHENTICATED_ANONYMOUSLY','ROLE_GAL_SHOW');
-		if ($this->id <> 0) {
+		$roles = array('ROLE_GAL_SHOW');
+		if ($this->id == 0) {
+			$roles[] = 'ROLE_GUEST';
+		} else {
+			$roles[] = 'ROLE_USER';
 			if (in_array($this->groupId, array(4,9,10))) {
 				$roles[] = 'ROLE_GAL_ADD_IMG';
 				$roles[] = 'ROLE_GAL_ADD_ALB';
@@ -127,7 +130,7 @@ class UserConfigInfo implements UserInterface
 				$roles[] = 'ROLE_GAL_EDIT_CAT';
 				$roles[] = 'ROLE_GAL_DEL_IMG';
 			}
-		}
+		}	
 		return $roles;
 	}
 	public function eraseCredentials()

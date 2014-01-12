@@ -35,7 +35,6 @@ class Image {
 	protected $count = 0; 
 
 	/**
-	 * @Assert\File(maxSize="6000000")
 	 * Файл изображения
 	 */
 	private $file;
@@ -94,6 +93,7 @@ class Image {
 	public function __construct($count = 0) {
 		$this->count = $count;
 		$this->id = 0;
+		$this->file = null;
 	}
 	
 	/**
@@ -229,19 +229,26 @@ class Image {
 	 * @ORM\PrePersist()
 	 * Действия перед вставкой записи в базу данных
 	 */
+	public function createFileName() {
+		if (null !== $this->getFile()) {
+			// Создание имени файла как ID пользователя и метки времени
+			$this->fileName = $this->memberId."_".(microtime(true)*10000).".".$this->getFile()->guessExtension();
+		} else throw new \Exception('File is not set');
+	}
+	
+	/**
+	 * @ORM\PostPersist()
+	 * Действия после вставки записи в базу данных
+	 * Перемещать файл необходимо после того, как запись создана в БД, иначе на сервере будут лежать левые файлы, если запись не создастся.
+	 */
 	public function uploadFile() {
-		// Пишут, что надо вызвать getFile, иначе поле file может оказаться пустым
-		// ... поверим...
-		if (null === $this->getFile()) {
-			return;
-		}
-		// Создание имени файла как ID пользователя и метки времени
-		$this->fileName = $this->memberId."_".(microtime(true)*10000).".".$this->file->guessExtension();	
-		// Перемещение и переименование файла
-		$this->file->move($this->getUploadDir(), $this->fileName);
-		// Создание миниатюр
-		$this->createThumbs();
-		$this->file = null;
+		if (null !== $this->getFile()) {
+			// Перемещение и переименование файла
+			$this->getFile()->move( $this->getUploadDir(), $this->fileName );
+			// Создание миниатюр
+			$this->createThumbs();
+			$this->file = null;
+		} else throw new \Exception('File is not set');
 	}
 	
 	/**

@@ -179,7 +179,10 @@ class AddController extends DefaultController {
 					->setMemberName( $user->getUsername() )
 					->setAlbum( $this->album )
 					->setVisibility('hide')
-					->setFile( $this->getRequest()->files->get('image') );
+ 					->setFile( $this->getRequest()->files->get('image') );
+				$errors = $this->get('validator')->validate( $image );				
+				if ( count($errors) > 0 )
+					throw new \Exception( (string) $errors );			
 				if ($this->freeSpace < filesize( $image->getAbsolutePath() ))
 					throw new \Exception('Невозможно загрузить изображение. Превышена дисковая квота.');
 				// Добавление в очередь на загрузку в БД
