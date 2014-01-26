@@ -59,9 +59,16 @@
 								minWidth : 640,
 								autoSize : true,
 								afterLoad : function(coming) {
-									var content = $(coming.content);
-									content.children('.title').remove();
-									coming.content = content;
+									try {
+										var json = $.parseJSON(coming.content);
+										// TODO тут необходим разбор выходных данных
+									} catch (e) {
+										if (json == undefined) {
+											var content = $(coming.content);
+											content.children('.title').remove();
+											coming.content = content;
+										}
+									}
 								}
 							});					
 					}

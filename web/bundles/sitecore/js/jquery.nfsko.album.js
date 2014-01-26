@@ -97,6 +97,7 @@ $(function() {
 				    		links = $(coming.content).find('.image-links'),
 				    		about = $(coming.content).find('.image-about'),
 				    		size = $(coming.content).find('#image-size'),
+				    		controls = $(coming.content).find('.fb-dialog.right'),
 				    		counter = 'Изображение ' + (this.index + 1) + ' из ' + this.group.length + (this.title ? ' - ' + this.title : '') + '.',
 				    		helper = 'Подсказка: доступны быстрые клавиши "&larr;/&rarr;" - назад/вперёд, "Esc" - закрыть, "F" - полный размер.';
 				    	coming.content = coming.tpl.image.replace('{href}', href);	
@@ -109,6 +110,10 @@ $(function() {
 				    		coming.width = w;
 				    		coming.height = h;
 				    	});
+				    	links.find('input').bind('click', function() {
+				    		this.select();
+				    	});
+				    	about.find('.left').append(controls).find('div')[0].remove();
 				    },
 					beforeLoad : function() {
 						var imageId = $(this.element).attr('imgid'),
