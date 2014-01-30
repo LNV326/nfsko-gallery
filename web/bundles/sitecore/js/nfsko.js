@@ -1,3 +1,4 @@
+
 (function($) {
 	// Функции для работы с хэшем
 	var hashChanger = {
@@ -24,6 +25,46 @@
 
 
 (function($) {
+	// Централизованный обработчик ответов от сервера
+	var ResponseHandler = function( options ) {
+		this._init(options);
+	}
+	ResponseHandler.prototype = {
+		responseType : null,
+		onSuccess : this._doNothing,
+		onFail : this._doNothing,
+		_doNothing : function() {},
+		response_statuses : {
+			ST_SUCCESS : 'Success',
+			ST_FAIL : 'Fail'
+		},
+		_init : function( options ) {
+			if (typeof options === 'object')
+				for(var key in options)
+					this[key] = options[key];
+		},
+		handler : function( response ) {
+			if (null === this.responseType)
+				try {
+					var json = $.parseJSON( response );
+					this.responseType = 'ajax';
+					response = json;
+				} catch (e) {
+					this.responseType = 'html';
+				}
+			switch ( this.responseType ) {
+				case 'ajax': 
+					switch ( response.status ) {
+						case this.response_statuses.ST_SUCCESS : return this.onSuccess( response.body );
+						case this.response_statuses.ST_FAIL : return this.onFail( response.error );
+					}
+					break;
+				case 'html': 
+					return this.onSuccess( response );
+			}
+		}
+	}
+	
 	var nfsko = {
 		// ��� �������, ��������� � ������������� �������
 		//
@@ -59,16 +100,34 @@
 								minWidth : 640,
 								autoSize : true,
 								afterLoad : function(coming) {
-									try {
-										var json = $.parseJSON(coming.content);
-										// TODO тут необходим разбор выходных данных
-									} catch (e) {
-										if (json == undefined) {
-											var content = $(coming.content);
-											content.children('.title').remove();
-											coming.content = content;
+//									try {
+//										var json = $.parseJSON(coming.content);
+//										// TODO тут необходим разбор выходных данных
+//									} catch (e) {
+//										if (json == undefined) {
+//											var content = $(coming.content);
+//											content.children('.title').remove();
+//											coming.content = content;
+//										}
+//									}
+									var rh = new ResponseHandler({
+										responseType:null,
+										onSuccess : function(body) {
+											if (this.responseType != 'ajax') {
+												var content = $(coming.content);
+												content.children('.title').remove();
+												coming.content = content;
+											} else {
+												alert( "Операция успешно выполнена" );
+												return false;
+											}											
+										},
+										onFail : function(error) {
+											alert( "DestinationInnerFail: "+error[0] );
+											return false;
 										}
-									}
+									});
+									return rh.handler(coming.content);
 								}
 							});					
 					}
@@ -182,16 +241,28 @@
 							  dataType: "json",
 							  context: t,
 						}).done(function( response ) {
-							switch ( response.status ) {
-								case this.response_statuses.ST_SUCCESS :
-									if (confirm('Альбом '+response.body.album.name+' успешно создан. Перейти в него?'))
-										window.location.replace(response.body.album.url);
+//							switch ( response.status ) {
+//								case this.response_statuses.ST_SUCCESS :
+//									if (confirm('Альбом '+response.body.album.name+' успешно создан. Перейти в него?'))
+//										window.location.replace(response.body.album.url);
+//									else location.reload();
+//									break;
+//								case this.response_statuses.ST_FAIL:
+//									alert( "DestinationInnerFail: "+response.error[0] );
+//									break;
+//							}	
+							var rh = new ResponseHandler({
+								responseType:'ajax',
+								onSuccess : function(body) {
+									if (confirm('Альбом '+body.album.name+' успешно создан. Перейти в него?'))
+										window.location.replace(body.album.url);
 									else location.reload();
-									break;
-								case this.response_statuses.ST_FAIL:
-									alert( "DestinationInnerFail: "+response.error[0] );
-									break;
-							}							  
+								},
+								onFail : function(error) {
+									alert( "DestinationInnerFail: "+error[0] );
+								}
+							});
+							rh.handler(response);
 						}).fail(function( jqXHR, textStatus ) {
 							// Обработка ошибки при вызове сервера
 							alert( "RequestNotValidFail: " + textStatus );
