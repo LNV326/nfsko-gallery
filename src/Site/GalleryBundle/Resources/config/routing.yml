@@ -13,10 +13,10 @@ site_gallery_image:
     defaults: { _controller: SiteGalleryBundle:Show:showImage }      
 site_gallery_showImage:
     pattern: /_image/{imageId}/_show
-    defaults: { _controller: SiteGalleryBundle:Visibility:showImage }
+    defaults: { _controller: SiteGalleryBundle:Edit:showImage }
 site_gallery_hideImage:
     pattern: /_image/{imageId}/_hide
-    defaults: { _controller: SiteGalleryBundle:Visibility:hideImage }
+    defaults: { _controller: SiteGalleryBundle:Edit:hideImage }
 site_gallery_removeImage:
     pattern: /_image/{imageId}/_remove
     defaults: { _controller: SiteGalleryBundle:Remove:removeImage }
@@ -29,7 +29,7 @@ site_gallery_category:
     defaults: { _controller: SiteGalleryBundle:Show:showCategory }   
 site_gallery_setCategoryCover:
     pattern: /{cRefId}/_cover/{iId}
-    defaults: { _controller: SiteGalleryBundle:Visibility:setCategoryCover }
+    defaults: { _controller: SiteGalleryBundle:Edit:setCategoryCover }
 
 site_gallery_addAlbum:
     pattern: /{cRefId}/_add
@@ -39,7 +39,7 @@ site_gallery_album:
     defaults: { _controller: SiteGalleryBundle:Show:showAlbum }    
 site_gallery_setAlbumCover:
     pattern: /{cRefId}/{aRefId}/_cover/{iId}
-    defaults: { _controller: SiteGalleryBundle:Visibility:setAlbumCover }    
+    defaults: { _controller: SiteGalleryBundle:Edit:setAlbumCover }    
        
 site_gallery_addImages:
     pattern: /{cRefId}/{aRefId}/_add

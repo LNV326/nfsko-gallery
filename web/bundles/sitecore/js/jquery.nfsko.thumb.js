@@ -11,10 +11,6 @@ $(function() {
     	options : {
     		thumbnailsPath : 'thumbs/'
     	},
-    	response_statuses : {
-    		ST_SUCCESS : 'Success',
-    		ST_FAIL : 'Fail'
-    	},
 		imageDOM : null,
 		thumbDOM : null,
 		progressDOM : null,
@@ -30,12 +26,12 @@ $(function() {
 			this.thumbDOM = this.imageDOM.children('img');
 			this.thumb( this.thumbDOM.attr('lazysrc') );
 			
-			var t = this;
-			this.element.find('div.buttons div').each(function(){
-				$(this).bind('click', function() {
-					t._toggleVisibility(this);
-				});
-			});
+//			var t = this;
+//			this.element.find('div.buttons div').each(function(){
+//				$(this).bind('click', function() {
+//					t._toggleVisibility(this);
+//				});
+//			});
     	},
     	// Дейструктор
     	_destroy : function() {
@@ -114,51 +110,47 @@ $(function() {
 			this.createProgressBar();				
 		},
 		// Завершение процасса загрузки
-		uploadDone : function( response ) {
-			// response - JSON объект, содержащий: error,
-			// result
-			// result содержит: imgUrl, imgId, imgStatus
-			// error содержит: code, text
-			switch ( response.status ) {
-				case this.response_statuses.ST_SUCCESS :
-					this.element.addClass('new');
-					this.updateProgressBar(101);
-					//this.image( response.body.image.url );
-					//this.imageDOM.attr( 'imgid', response.body.image.id )
-					return response.body.image.html;
-				case this.response_statuses.ST_FAIL :
-					this.element.addClass('error');
-					this.uploadError( response.error[0] );
-					alert( "DestinationInnerFail: " + response.error[0] );
-					return null;
+		uploadDone : function( isError, error ) {
+			if ( false == isError ) {
+				this.element.addClass('new');
+				this.updateProgressBar(101);
+			} else {
+				this.element.addClass('error');
+				this.uploadError( error[0] );
 			}
 		},
 		// Ошибка загрузки изображения
 		uploadError : function( errCode ) {	
 			this.progressDOM.progressbar("option", "value", 'auto').text(errCode);
 		},
-		// Переключение видимости изображения
-		_toggleVisibility : function( button ) {
-			var element = this;
-			$.ajax({
-				url: $(button).attr('href'),
-				type: "POST",
-				dataType: "json",
-				context: element,
-				beforeSend : function( jqXHR, textStatus ) {
-					this.status('changing');
-				}
-			}).done(function( response ) {
-				// Обработка ответа от сервера
-				switch ( response.status ) {
-					case this.response_statuses.ST_SUCCESS : this.status( response.body.image_visibility ); break;
-					case this.response_statuses.ST_FAIL : alert( "DestinationInnerFail: Что-то не так при изменении видимости изображения" ); break;
-				}
-			}).fail(function( jqXHR, textStatus ) {
-				// Обработка ошибки при вызове сервера
-				alert( "RequestNotValidFail: " + textStatus );
-			});
-			return false;
-		}	
+//		// Переключение видимости изображения
+//		_toggleVisibility : function( button ) {
+//			var element = this;
+//			$.ajax({
+//				url: $(button).attr('href'),
+//				type: "POST",
+//				dataType: "json",
+//				context: element,
+//				beforeSend : function( jqXHR, textStatus ) {
+//					this.status('changing');
+//				}
+//			}).done(function( response ) {
+//				// Обработчик ответа от сервера
+//				var rh = new ResponseHandler({
+//					responseType: 'ajax',
+//					onSuccess : function( body ) {
+//						this.status( body.image_visibility );											
+//					},
+//					onFailure : function( error ) {
+//						alert( "DestinationInnerFail: Что-то не так при изменении видимости изображения" );
+//					}
+//				});
+//				rh.handler( response );
+//			}).fail(function( jqXHR, textStatus ) {
+//				// Обработка ошибки при вызове сервера
+//				alert( "RequestNotValidFail: " + textStatus );
+//			});
+//			return false;
+//		}	
     });
 });

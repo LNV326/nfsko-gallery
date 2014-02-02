@@ -32,8 +32,8 @@
 	ResponseHandler.prototype = {
 		responseType : null,
 		onSuccess : this._doNothing,
-		onFail : this._doNothing,
-		_doNothing : function() {},
+		onFailure : this._doNothing,
+		_doNothing : function() {return true},
 		response_statuses : {
 			ST_SUCCESS : 'Success',
 			ST_FAIL : 'Fail'
@@ -43,7 +43,9 @@
 				for(var key in options)
 					this[key] = options[key];
 		},
+		// Обработчик ответов от сервера
 		handler : function( response ) {
+			// Если ожидаемый тип данных не указан, определяем его
 			if (null === this.responseType)
 				try {
 					var json = $.parseJSON( response );
@@ -56,7 +58,7 @@
 				case 'ajax': 
 					switch ( response.status ) {
 						case this.response_statuses.ST_SUCCESS : return this.onSuccess( response.body );
-						case this.response_statuses.ST_FAIL : return this.onFail( response.error );
+						case this.response_statuses.ST_FAIL : return this.onFailure( response.error );
 					}
 					break;
 				case 'html': 
@@ -74,6 +76,7 @@
 		 * 1.0 Файл создан
 		 * 1.1 Вынесено в отдельные классы: thumbClass, hashClass, thumbUploadClass, fancyBoxButtonsClass, albumClass, mainPageClass
 		 * 1.2 Рефакторинг thumbClass, albumClass, fancyBoxButtonsClass, mainPageClass
+		 * 1.3 thumbClass и albumClass вынесены в отдельные файлы, переведены на jquery-ui.
 		 */
 		gallery : function(options) {
 											
@@ -100,16 +103,7 @@
 								minWidth : 640,
 								autoSize : true,
 								afterLoad : function(coming) {
-//									try {
-//										var json = $.parseJSON(coming.content);
-//										// TODO тут необходим разбор выходных данных
-//									} catch (e) {
-//										if (json == undefined) {
-//											var content = $(coming.content);
-//											content.children('.title').remove();
-//											coming.content = content;
-//										}
-//									}
+									// Обработчик ответа от сервера
 									var rh = new ResponseHandler({
 										responseType:null,
 										onSuccess : function(body) {
@@ -118,11 +112,17 @@
 												content.children('.title').remove();
 												coming.content = content;
 											} else {
-												alert( "Операция успешно выполнена" );
+												//alert( "Операция успешно выполнена" );
+												$.fancybox({
+													autoSize : false,
+													width : 300,
+													height : 100,
+													content : "Операция успешно выполнена"
+												});
 												return false;
 											}											
 										},
-										onFail : function(error) {
+										onFailure : function(error) {
 											alert( "DestinationInnerFail: "+error[0] );
 											return false;
 										}
@@ -175,9 +175,9 @@
 						// Вызывается перед загрузкой для каждого файла
 						beforeEach : function(file) { return t._addThumbFromFile(file); },
 						// Обновление процесса загрузки
-						progressUpdated : t._updateThumbProgress,
+						progressUpdated : function(i, file, progress) { return t._updateThumbProgress(i, file, progress); },
 						// Завершение процасса загрузки
-						uploadFinished : t._updateThumbFinished,
+						uploadFinished : function(i, file, response) { return t._updateThumbFinished(i, file, response); },
 						// Обработка ошибки загрузки, отловленная загрузчиком
 						error : t._onError
 					});
@@ -192,23 +192,60 @@
 				},
 				// Вставка миниатюры в область загрузки
 				_addThumbFromFile : function (file) {	
-					var thumb = this.thumbTemplate.clone();
-					thumb.thumbnail();
-					thumb.thumbnail('createFromFile', file);
-					this.obj.append(thumb);
-					$.data( file, thumb );	
+					var thumb = this.thumbTemplate.clone(),
+						thumb = thumb.thumbnail(),
+						thumb = thumb.thumbnail('createFromFile', file);
+					this.obj.append( thumb );
+					$.data( file, thumb );
 					return true;
 				},
 				// Обновление процесса загрузки
 				_updateThumbProgress : function(i, file, progress) {
-					$.data(file).thumbnail('updateProgressBar', progress);
+					try {
+						var thumb = $.data(file),
+							thumb = thumb.thumbnail();
+						thumb.thumbnail('updateProgressBar', progress);
+					} catch (e) {
+						console.error(e);
+					}
 				},
 				// Завершение процасса загрузки
 				_updateThumbFinished : function(i, file, response) {
-					var thumb = $( $.trim( $.data(file).thumbnail('uploadDone', response) ) );
-					$.album.album( 'addThumb', thumb ); // TODO 
-					$.album.album( 'initGroup' );
-					thumb.thumbnail();					
+					try {
+						var thumb = $.data(file),
+							thumb = thumb.thumbnail();
+						thumb.thumbnail('uploadDone', 0, response.error);
+					} catch (e) {
+						console.error(e);
+					}
+					
+					// Обработчик ответа от сервера
+					var rh = new ResponseHandler({
+						responseType : 'ajax',
+						onSuccess : function( body ) {
+							try {
+								var thumb = $.data(file),
+									thumb = thumb.thumbnail();
+								thumb.thumbnail('uploadDone', 0, null);
+							} catch (e) {
+								console.error(e);
+							}
+							var thumb = $($.trim( body.image.html )),
+								thumb = thumb.thumbnail();
+							$.album.album( 'addThumb', thumb ); // TODO 
+							$.album.album( 'initGroup' );
+						},
+						onFailure : function( error ) {
+							try {
+								var thumb = $.data(file),
+									thumb = thumb.thumbnail();
+								thumb.thumbnail('uploadDone', 1, error);
+							} catch (e) {
+								console.error(e);
+							}
+						}
+					});
+					rh.handler( response );				
 				},
 				// Обработка ошибки загрузки, отловленная загрузчиком
 				_onError : function(errCode, file) {
@@ -225,10 +262,6 @@
 				this._init(obj);
 			};
 			addAlbumClass.prototype = {
-			    	response_statuses : {
-			    		ST_SUCCESS : 'Success',
-			    		ST_FAIL : 'Fail'
-			    	},
 				_init : function(obj) {
 					this.obj = obj;
 					this.choices = this.obj.children('select');
@@ -241,16 +274,7 @@
 							  dataType: "json",
 							  context: t,
 						}).done(function( response ) {
-//							switch ( response.status ) {
-//								case this.response_statuses.ST_SUCCESS :
-//									if (confirm('Альбом '+response.body.album.name+' успешно создан. Перейти в него?'))
-//										window.location.replace(response.body.album.url);
-//									else location.reload();
-//									break;
-//								case this.response_statuses.ST_FAIL:
-//									alert( "DestinationInnerFail: "+response.error[0] );
-//									break;
-//							}	
+							// Обработчик ответа от сервера
 							var rh = new ResponseHandler({
 								responseType:'ajax',
 								onSuccess : function(body) {
@@ -258,7 +282,7 @@
 										window.location.replace(body.album.url);
 									else location.reload();
 								},
-								onFail : function(error) {
+								onFailure : function(error) {
 									alert( "DestinationInnerFail: "+error[0] );
 								}
 							});
