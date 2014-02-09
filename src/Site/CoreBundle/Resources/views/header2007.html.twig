@@ -101,7 +101,13 @@
 </style>
 
 <header>
-				<div id='top-time'>Сегодня {{"now"|date('D, d M Y - H:i','MSK')}} (Москва)</div>
+		{% set weekday = 'time.weekday.' ~ "now"|date('D','MSK') %}
+		{% set month = 'time.month.' ~ "now"|date('M','MSK') %}
+		{% set day = "now"|date('d','MSK') %}
+		{% set year = "now"|date('Y','MSK') %}
+		{% set time = "now"|date('H:i','MSK') %}
+		
+				<div id='top-time'>{{ '%s %s, %d %s %d%s - %s'|format('time.now'|trans(), weekday|trans(), day, month|trans(), year, 'time.year'|trans(), time) }} (Москва)</div>
 				<div id='top-logo'>
 					<div id='logo-top'>
 						<div id='logo-left'></div>
@@ -125,6 +131,6 @@
 					</div>
 				</div>
 				<div id='top-userinfo'>
-					<div class='left'><b>{% trans with {'%name%': '<a>' ~ app.user.username ~ '</a>'}%}Hello %name%{% endtrans %}</b></div>
+					<div class='left'><b>{{ ('main.hello')|trans() }} <a>{{ app.user.username }}</a></b></div>
 				</div>
 </header>
